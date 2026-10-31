@@ -162,6 +162,7 @@ def extract_answers(request):
         # Calculate the total score
 #def show_exam_result(request, course_id, submission_id):
 
+
 def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course, pk=course_id)
 
@@ -172,8 +173,9 @@ def show_exam_result(request, course_id, submission_id):
         enrollment__user=request.user
     )
 
-    questions = Question.objects.filter(course=course)
+    questions = list(Question.objects.filter(course=course))
     total_score = 0
+    total_possible = sum(question.grade for question in questions)
     question_results = []
 
     for question in questions:
@@ -199,11 +201,21 @@ def show_exam_result(request, course_id, submission_id):
             'is_correct': is_correct,
         })
 
+    percentage = (
+        (float(total_score) / float(total_possible)) * 100
+        if total_possible > 0 else 0
+    )
+
+    passed = percentage >= 80
+
     context = {
         'course': course,
         'submission': submission,
         'question_results': question_results,
         'total_score': total_score,
+        'total_possible': total_possible,
+        'percentage': percentage,
+        'passed': passed,
     }
 
     return render(
@@ -211,6 +223,7 @@ def show_exam_result(request, course_id, submission_id):
         'onlinecourse/exam_result_bootstrap.html',
         context
     )
+
 
 
 

@@ -18,9 +18,18 @@
     <div class="container mt-4">
         <h2>{{ course.name }} — Assessment Results</h2>
 
-        <div class="alert {% if total_score > 0 %}alert-success{% else %}alert-info{% endif %}">
-            <h4>Your total score: {{ total_score }}</h4>
-        </div>
+        <div class="alert {% if passed %}alert-success{% else %}alert-danger{% endif %}">
+    <h4>
+        Your total score: {{ total_score }} / {{ total_possible }}
+    </h4>
+    <h5>Your percentage: {{ percentage|floatformat:2 }}%</h5>
+
+    {% if passed %}
+        <p><strong>Congratulations! You have passed the assessment.</strong></p>
+    {% else %}
+        <p><strong>You have not passed. You need at least 80% to pass.</strong></p>
+    {% endif %}
+</div>
 
         <h4>Question Results</h4>
 
